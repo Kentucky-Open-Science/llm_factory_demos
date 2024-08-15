@@ -2,8 +2,12 @@
 
 import json
 
+from langchain_core.load import dumpd, dumps, load, loads
+
+
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_community.vectorstores import FAISS
+from langchain_core.prompts import ChatPromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.tools.retriever import create_retriever_tool
 from langchain_openai import ChatOpenAI
@@ -35,6 +39,17 @@ embeddings = caai_emb_client(
     num_workers=10
 )
 
+def save_prompt():
+
+    # Get the prompt to use - you can modify this!
+    prompt = hub.pull("hwchase17/openai-functions-agent")
+
+    string_representation = dumps(prompt, pretty=True)
+
+    with open('../utils/prompt_openai-functions-agent.json', 'w') as fp:
+        json.dump(string_representation, fp, indent=4)
+
+
 def get_tools(url):
 
     loader = WebBaseLoader(url)
@@ -58,9 +73,9 @@ if __name__ == '__main__':
     url = "https://admission.uky.edu/freshman/admission-checklist"
     tools = get_tools(url)
 
-    # Get the prompt to use - you can modify this!
-    prompt = hub.pull("hwchase17/openai-functions-agent")
-    print(prompt.messages)
+    #load saved prompt
+    with open("../utils/prompt_openai-functions-agent.json", "r") as fp:
+        prompt = loads(json.load(fp))
 
     agent = create_tool_calling_agent(llm, tools, prompt)
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, stream_runnable=False)

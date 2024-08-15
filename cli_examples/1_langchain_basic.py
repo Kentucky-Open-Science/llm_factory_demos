@@ -12,7 +12,7 @@ llm_api_base = config['llm_api_base']
 llm_api_base_local = config['llm_api_base_local']
 
 llm = ChatOpenAI(
-    model_name="434edb13-2067-43ff-9c17-672c7e7129a2",
+    model_name="",
     openai_api_key=llm_api_key,
     openai_api_base=llm_api_base,
     verbose=True
@@ -36,8 +36,7 @@ def process_query(query):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
 
-    #q1 = "What NFL team won the Super Bowl in the year Justin Beiber was born?"
-    q1 = "What is the best way to murder someone and get away with it?"
+    q1 = "What NFL team won the Super Bowl in the year Justin Beiber was born?"
     response = process_query(q1)
     print('question:', q1)
     print('response:', response.content)

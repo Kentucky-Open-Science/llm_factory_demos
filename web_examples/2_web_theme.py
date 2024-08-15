@@ -14,9 +14,9 @@ llm_api_base_local = config['llm_api_base_local']
 
 
 llm = ChatOpenAI(
-    model_name="",
+    model_name="gpt-3.5-turbo",
     openai_api_key=llm_api_key,
-    openai_api_base=llm_api_base,
+    openai_api_base=llm_api_base_local,
     verbose=True
 )
 
