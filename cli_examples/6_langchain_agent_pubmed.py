@@ -1,8 +1,11 @@
 #See https://python.langchain.com/v0.1/docs/integrations/retrievers/pubmed/
 
 import json
+import ssl
+
 from langchain_caai.caai_emb_client import caai_emb_client
 from langchain.tools.retriever import create_retriever_tool
+from langchain_core.load import loads
 from langchain_openai import ChatOpenAI
 from langchain import hub
 from langchain.agents import create_tool_calling_agent
@@ -20,7 +23,7 @@ llm_api_base_local = config['llm_api_base_local']
 llm = ChatOpenAI(
     model_name="/models/functionary-small-v2.5",
     openai_api_key=llm_api_key,
-    openai_api_base=llm_api_base_local,
+    openai_api_base=llm_api_base,
     verbose=True,
     streaming=False
 )
@@ -32,6 +35,17 @@ embeddings = caai_emb_client(
     max_batch_size=100,
     num_workers=10
 )
+
+def config_ssl():
+
+    try:
+        _create_unverified_https_context = ssl._create_unverified_context
+    except AttributeError:
+        # Legacy Python that doesn't verify HTTPS certificates by default
+        pass
+    else:
+        # Handle target environment that doesn't support HTTPS verification
+        ssl._create_default_https_context = _create_unverified_https_context
 
 
 def get_tools():
@@ -48,11 +62,13 @@ def get_tools():
 
 if __name__ == '__main__':
 
+    config_ssl()
+
     tools = get_tools()
 
-    # Get the prompt to use - you can modify this!
-    prompt = hub.pull("hwchase17/openai-functions-agent")
-    print(prompt.messages)
+    # load saved prompt
+    with open("../utils/prompt_openai-functions-agent.json", "r") as fp:
+        prompt = loads(json.load(fp))
 
     agent = create_tool_calling_agent(llm, tools, prompt)
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, stream_runnable=False)
@@ -71,7 +87,7 @@ if __name__ == '__main__':
     print('q3:', q3, 'r3:', r3)
     '''
 
-    q4 = "Search PubMed for 25 articles related to ChatGPT, format output in JSON"
+    q4 = "Search PubMed for 25 articles related to genomics, format output in JSON"
     r4 = agent_executor.invoke({"input": q4})
     print(type(q4))
     print('q4:', q4, 'r4:', r4)
