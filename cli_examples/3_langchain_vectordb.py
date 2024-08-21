@@ -22,10 +22,13 @@ embeddings = caai_emb_client(
     max_batch_size=100
 )
 
-openai_client_embeddings = OpenAIEmbeddings(
+'''
+embeddings = OpenAIEmbeddings(
+    model="/models/Meta-Llama-3.1-8B-Instruct",
     openai_api_key=llm_api_key,
     openai_api_base=llm_api_base,
 )
+'''
 
 
 def process_query(query):

@@ -46,7 +46,7 @@ messages = [
     {"role": "user", "content": "What is the current temperature of New York, San Francisco and Chicago?"}
 ]
 response = client.chat.completions.create(
-    model="/models/functionary-small-v2.5",
+    model="/models/Meta-Llama-3.1-8B-Instruct",
     messages=messages,
     tools=tools,
     tool_choice="auto",

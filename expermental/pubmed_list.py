@@ -63,6 +63,39 @@ def get_tools():
 
 if __name__ == '__main__':
 
+    paper_map = dict()
+
+    with open("gene_data.json", "r") as fp:
+        gene_data = json.load(fp)
+
+    haspaper = 0
+
+    for gene, data in gene_data.items():
+        if '\n\n' in data['output']:
+            paper_map[gene] = 1
+            haspaper += 1
+        else:
+            paper_map[gene] = 0
+
+    print(haspaper, len(paper_map))
+
+    df = pd.read_csv('brown_ME.csv')
+
+    paper_list = []
+
+    for index, row in df.iterrows():
+        gene = row['gene']
+        if gene in paper_map:
+            paper_list.append(paper_map[gene])
+        else:
+            paper_list.append(0)
+
+    df.insert(1, "paperexist", paper_list, True)
+
+    df.to_csv('brown_ME_papers.csv', index=False)
+
+    print(df)
+    exit()
     with open("gene_data.json", "r") as fp:
         gene_data = json.load(fp)
 

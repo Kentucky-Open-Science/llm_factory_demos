@@ -3,6 +3,7 @@
 import json
 
 from langchain_caai.caai_emb_client import caai_emb_client
+from langchain_openai import OpenAIEmbeddings
 
 with open('../config.json') as user_file:
     config = json.load(user_file)
