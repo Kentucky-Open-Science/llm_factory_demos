@@ -3,6 +3,7 @@
 import json
 import ssl
 
+import pandas as pd
 from langchain_caai.caai_emb_client import caai_emb_client
 from langchain.tools.retriever import create_retriever_tool
 from langchain_core.load import loads
@@ -62,6 +63,12 @@ def get_tools():
 
 if __name__ == '__main__':
 
+    with open("gene_data.json", "r") as fp:
+        gene_data = json.load(fp)
+
+    #gene_data = dict()
+
+    df = pd.read_csv('brown_ME.csv')
 
     config_ssl()
 
@@ -74,23 +81,25 @@ if __name__ == '__main__':
     agent = create_tool_calling_agent(llm, tools, prompt)
     agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True, stream_runnable=False)
 
-    '''
-    q1 = "hi!"
-    r1 = agent_executor.invoke({"input": q1})
-    print('q1:', q1, 'r1:', r1)
 
-    q2 = "how can langsmith help with testing?"
-    r2 = agent_executor.invoke({"input": q2})
-    print('q2:', q2, 'r2:', r2)
+    for index, row in df.iterrows():
+        gene_name = row["gene"]
 
-    q3 = "whats the weather in lexington, kentucky?"
-    r3 = agent_executor.invoke({"input": q3})
-    print('q3:', q3, 'r3:', r3)
-    '''
+        if gene_name in gene_data:
+            print('gene:', gene_name, ' output:', gene_data[gene_name]['output'])
+        else:
+            try:
+                q4 = 'Search PubMed for articles related to the gene ' + gene_name + ' and substance abuse or addiction, format output in JSON'
+                r4 = agent_executor.invoke({"input": q4})
 
-    q4 = "Search PubMed for 2 articles related to the gene related to genomics, format output in JSON"
-    r4 = agent_executor.invoke({"input": q4})
+                print(r4)
 
-    print(r4)
+                gene_data[gene_name] = r4
+
+                with open('gene_data.json', 'w') as fp:
+                    json.dump(gene_data, fp, indent=4)
+            except:
+                print('Something went wrong')
+
 
 
