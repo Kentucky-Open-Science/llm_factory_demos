@@ -10,3 +10,4 @@ gradio
 xmltodict
 BeautifulSoup4
 faiss-cpu
+urllib3>=2.6.0 # not directly required, pinned by Snyk to avoid a vulnerability
