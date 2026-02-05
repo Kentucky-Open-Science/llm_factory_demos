@@ -10,3 +10,4 @@ gradio
 xmltodict
 BeautifulSoup4
 faiss-cpu
+orjson>=3.11.6 # not directly required, pinned by Snyk to avoid a vulnerability
